@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pushbike Race Management System</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Login Page -->
+        <div id="login-page" class="page active">
+            <div class="login-container">
+                <h1>🚴 Pushbike System</h1>
+                <h2>Login Admin</h2>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label>Username:</label>
+                        <input type="text" id="login-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password:</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <div id="login-error" class="error-message"></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="dashboard-page" class="page">
+            <nav class="sidebar">
+                <h2>🚴 Pushbike</h2>
+                <ul class="nav-menu">
+                    <li><a href="#" data-page="dashboard" class="nav-link active">Dashboard</a></li>
+                    <li><a href="#" data-page="participants" class="nav-link">Peserta</a></li>
+                    <li><a href="#" data-page="race-draw" class="nav-link">Pengundian</a></li>
+                    <li><a href="#" data-page="schedule" class="nav-link">Jadwal</a></li>
+                    <li><a href="#" data-page="live-monitor" class="nav-link">Monitor Live</a></li>
+                    <li><a href="#" data-page="results" class="nav-link">Hasil Lomba</a></li>
+                    <li><a href="#" data-page="next-stage" class="nav-link">Tahap Berikutnya</a></li>
+                    <li><a href="#" data-page="admins" class="nav-link">Admin</a></li>
+                    <li><a href="#" data-page="spectator" class="nav-link">Tampilan Penonton</a></li>
+                </ul>
+                <button id="logout-btn" class="btn btn-danger">Logout</button>
+            </nav>
+
+            <main class="main-content">
+                <!-- Dashboard Content -->
+                <div id="dashboard-content" class="content-section active">
+                    <h1>Dashboard</h1>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Total Peserta</h3>
+                            <p class="stat-number" id="stat-participants">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Jadwal Lomba</h3>
+                            <p class="stat-number" id="stat-schedules">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Hasil Lomba</h3>
+                            <p class="stat-number" id="stat-results">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Participants Content -->
+                <div id="participants-content" class="content-section">
+                    <h1>Daftar Peserta</h1>
+                    <button class="btn btn-primary" id="add-participant-btn">Tambah Peserta</button>
+                    
+                    <div id="add-participant-form" class="form-container" style="display: none;">
+                        <h3>Form Pendaftaran Peserta</h3>
+                        <form id="participant-form" enctype="multipart/form-data">
+                            <div class="form-group">
+                                <label>Nama Lengkap:</label>
+                                <input type="text" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Lahir:</label>
+                                <input type="date" name="dob" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Kategori:</label>
+                                <select name="category" required>
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="U8">Under 8</option>
+                                    <option value="U10">Under 10</option>
+                                    <option value="U12">Under 12</option>
+                                    <option value="U15">Under 15</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Nama Orang Tua:</label>
+                                <input type="text" name="parent_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Kontak:</label>
+                                <input type="text" name="contact" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Foto:</label>
+                                <input type="file" name="photo" accept="image/*">
+                            </div>
+                            <button type="submit" class="btn btn-success">Simpan</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-participant-btn">Batal</button>
+                        </form>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="participants-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nama</th>
+                                    <th>Tanggal Lahir</th>
+                                    <th>Kategori</th>
+                                    <th>Orang Tua</th>
+                                    <th>Kontak</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Race Draw Content -->
+                <div id="race-draw-content" class="content-section">
+                    <h1>Pengundian Pertandingan</h1>
+                    <button class="btn btn-primary" id="auto-draw-btn">Undian Otomatis</button>
+                    
+                    <div class="table-container">
+                        <table id="race-draw-table">
+                            <thead>
+                                <tr>
+                                    <th>Grup</th>
+                                    <th>Urutan</th>
+                                    <th>Nama Peserta</th>
+                                    <th>Kategori</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Schedule Content -->
+                <div id="schedule-content" class="content-section">
+                    <h1>Jadwal Lomba</h1>
+                    <button class="btn btn-primary" id="add-schedule-btn">Tambah Jadwal</button>
+                    
+                    <div id="add-schedule-form" class="form-container" style="display: none;">
+                        <h3>Form Jadwal Lomba</h3>
+                        <form id="schedule-form">
+                            <div class="form-group">
+                                <label>Nama Grup:</label>
+                                <input type="text" name="group_name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Kategori:</label>
+                                <select name="category" required>
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="U8">Under 8</option>
+                                    <option value="U10">Under 10</option>
+                                    <option value="U12">Under 12</option>
+                                    <option value="U15">Under 15</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Waktu Mulai:</label>
+                                <input type="datetime-local" name="start_time" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Waktu Selesai:</label>
+                                <input type="datetime-local" name="end_time">
+                            </div>
+                            <div class="form-group">
+                                <label>Nomor Trek:</label>
+                                <input type="number" name="track_number" min="1">
+                            </div>
+                            <button type="submit" class="btn btn-success">Simpan</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-schedule-btn">Batal</button>
+                        </form>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>Grup</th>
+                                    <th>Kategori</th>
+                                    <th>Waktu Mulai</th>
+                                    <th>Waktu Selesai</th>
+                                    <th>Trek</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Live Monitor Content -->
+                <div id="live-monitor-content" class="content-section">
+                    <h1>Monitor Live</h1>
+                    <button class="btn btn-primary" id="add-live-data-btn">Input Data Live</button>
+                    <button class="btn btn-secondary" id="refresh-live-btn">Refresh</button>
+                    
+                    <div id="add-live-form" class="form-container" style="display: none;">
+                        <h3>Input Data Live</h3>
+                        <form id="live-form">
+                            <div class="form-group">
+                                <label>Peserta:</label>
+                                <select name="participant_id" id="live-participant-select" required>
+                                    <option value="">Pilih Peserta</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Posisi:</label>
+                                <input type="number" name="position" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Waktu Lap (mm:ss.ms):</label>
+                                <input type="text" name="lap_time" placeholder="01:23.45" required>
+                            </div>
+                            <button type="submit" class="btn btn-success">Simpan</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-live-btn">Batal</button>
+                        </form>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="live-monitor-table">
+                            <thead>
+                                <tr>
+                                    <th>Posisi</th>
+                                    <th>Nama Peserta</th>
+                                    <th>Kategori</th>
+                                    <th>Waktu Lap</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Results Content -->
+                <div id="results-content" class="content-section">
+                    <h1>Hasil Lomba</h1>
+                    <button class="btn btn-primary" id="add-result-btn">Input Hasil</button>
+                    
+                    <div class="filter-group">
+                        <label>Filter Kategori:</label>
+                        <select id="results-filter">
+                            <option value="">Semua Kategori</option>
+                            <option value="U8">Under 8</option>
+                            <option value="U10">Under 10</option>
+                            <option value="U12">Under 12</option>
+                            <option value="U15">Under 15</option>
+                        </select>
+                    </div>
+                    
+                    <div id="add-result-form" class="form-container" style="display: none;">
+                        <h3>Input Hasil Lomba</h3>
+                        <form id="result-form">
+                            <div class="form-group">
+                                <label>Peserta:</label>
+                                <select name="participant_id" id="result-participant-select" required>
+                                    <option value="">Pilih Peserta</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Kategori:</label>
+                                <select name="category" required>
+                                    <option value="">Pilih Kategori</option>
+                                    <option value="U8">Under 8</option>
+                                    <option value="U10">Under 10</option>
+                                    <option value="U12">Under 12</option>
+                                    <option value="U15">Under 15</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Waktu Finish (mm:ss.ms):</label>
+                                <input type="text" name="finish_time" placeholder="01:23.45" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Ranking:</label>
+                                <input type="number" name="rank" min="1" required>
+                            </div>
+                            <button type="submit" class="btn btn-success">Simpan</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-result-btn">Batal</button>
+                        </form>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Ranking</th>
+                                    <th>Nama Peserta</th>
+                                    <th>Kategori</th>
+                                    <th>Waktu Finish</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Next Stage Content -->
+                <div id="next-stage-content" class="content-section">
+                    <h1>Tahap Berikutnya</h1>
+                    <button class="btn btn-primary" id="add-next-stage-btn">Tambah ke Tahap Berikutnya</button>
+                    
+                    <div id="add-next-stage-form" class="form-container" style="display: none;">
+                        <h3>Tambah Peserta ke Tahap Berikutnya</h3>
+                        <form id="next-stage-form">
+                            <div class="form-group">
+                                <label>Peserta:</label>
+                                <select name="participant_id" id="next-stage-participant-select" required>
+                                    <option value="">Pilih Peserta</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Tahap:</label>
+                                <select name="stage" required>
+                                    <option value="">Pilih Tahap</option>
+                                    <option value="Semifinal">Semifinal</option>
+                                    <option value="Final">Final</option>
+                                    <option value="Grand Final">Grand Final</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Status:</label>
+                                <select name="status" required>
+                                    <option value="Qualified">Qualified</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Eliminated">Eliminated</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-success">Simpan</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-next-stage-btn">Batal</button>
+                        </form>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="next-stage-table">
+                            <thead>
+                                <tr>
+                                    <th>Nama Peserta</th>
+                                    <th>Kategori</th>
+                                    <th>Tahap</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admins Content -->
+                <div id="admins-content" class="content-section">
+                    <h1>Manajemen Admin</h1>
+                    <button class="btn btn-primary" id="add-admin-btn">Tambah Admin</button>
+                    
+                    <div id="add-admin-form" class="form-container" style="display: none;">
+                        <h3>Tambah Admin Baru</h3>
+                        <form id="admin-form">
+                            <div class="form-group">
+                                <label>Username:</label>
+                                <input type="text" name="username" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Password:</label>
+                                <input type="password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-success">Simpan</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-admin-btn">Batal</button>
+                        </form>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="admins-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Dibuat Pada</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Spectator View Content -->
+                <div id="spectator-content" class="content-section">
+                    <h1>Tampilan Penonton & Orang Tua</h1>
+                    <button class="btn btn-secondary" id="refresh-spectator-btn">Refresh</button>
+                    
+                    <div class="spectator-view">
+                        <div class="spectator-section">
+                            <h2>🏁 Hasil Lomba Terbaru</h2>
+                            <div class="table-container">
+                                <table id="spectator-results-table">
+                                    <thead>
+                                        <tr>
+                                            <th>🏆 Rank</th>
+                                            <th>Nama</th>
+                                            <th>Kategori</th>
+                                            <th>Waktu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="spectator-section">
+                            <h2>📅 Jadwal Lomba</h2>
+                            <div class="table-container">
+                                <table id="spectator-schedule-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Grup</th>
+                                            <th>Kategori</th>
+                                            <th>Waktu Mulai</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
