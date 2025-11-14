@@ -5,16 +5,33 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 const db = require('./database');
 
 const app = express();
 const JWT_SECRET = 'pushbike-secret-key-2024';
+
+// Rate limiting configuration
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 requests per windowMs for auth endpoints
+  message: 'Too many login attempts, please try again later'
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100, // 100 requests per minute for general API
+  message: 'Too many requests, please try again later'
+});
 
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, '../../public/uploads')));
+
+// Apply rate limiting to all API routes
+app.use('/api', apiLimiter);
 
 // File upload configuration
 const storage = multer.diskStorage({
@@ -50,7 +67,7 @@ const authenticateToken = (req, res, next) => {
 // =========================
 
 // POST /api/auth/login - Login admin
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', authLimiter, (req, res) => {
   const { username, password } = req.body;
 
   db.get('SELECT * FROM admins WHERE username = ?', [username], (err, admin) => {
